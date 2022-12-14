@@ -29,7 +29,7 @@ class Orderbook {
         for(var i=0;i<this.orders.length;i++){
             if(this.orders[i].status === enums.order.status.live && 
                     this.orders[i].price === order.price &&
-                    this.order[i].qty === order.qty &&
+                    this.orders[i].qty === order.qty &&
                     this.orders[i].type !== order.type){
                 order.matched(this.orders[i].id);
                 this.orders[i].matched(order.id);

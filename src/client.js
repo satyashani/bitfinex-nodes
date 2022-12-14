@@ -4,10 +4,6 @@
  * Javascript file client.js 
  * *************************************************************** */
 
-// This client will as the DHT for a service called `rpc_test`
-// and then establishes a P2P connection it.
-// It will then send { msg: 'hello' } to the RPC server
-
 'use strict';
 
 const { PeerRPCClient }  = require('grenache-nodejs-http');
@@ -15,8 +11,7 @@ const Link = require('grenache-nodejs-link');
 
 const { Order } = require("./lib/Order");
 const { Orderbook } = require("./lib/Orderbook");
-
-var clientbook = new Orderbook();
+const enums = require("./lib/enums");
 
 const link = new Link({
   grape: 'http://127.0.0.1:30001'
@@ -28,28 +23,28 @@ peer.init();
 
 const handler = {
     test : function(){
-        peer.request('rpc_test', { msg: 'hello' }, { timeout: 10000 }, (err, data) => {
+        peer.request('rpc_test', { request: 'hello' }, { timeout: 10000 }, (err, data) => {
             if (err) {
                 console.error(err);
                 process.exit(-1);
             }
-            console.log(data); // { msg: 'world' }
+            console.log(data);
         });
     },
     placeOrder : function(order){
-        peer.request('order-placed', order, { timeout: 10000 }, (err, data) => {
+        peer.request('rpc_test',{ request : "order-placed",  data : order}, { timeout: 10000 }, (err, data) => {
             if (err) {
                 console.error(err);
             }
-            console.log(data); // { msg: 'world' }
+            console.log(data);
         });
     },
     cancelOrder : function(order){
-        peer.request('order-cancelled', order, { timeout: 10000 }, (err, data) => {
+        peer.request('rpc_test',{ request : "order-cancelled", data : order }, { timeout: 10000 }, (err, data) => {
             if (err) {
                 console.error(err);
             }
-            console.log(data); // { msg: 'world' }
+            console.log(data);
         });
     }
 };
@@ -92,3 +87,10 @@ class Client {
 };
 
 exports.Client = Client;
+
+var client = new Client();
+
+client.testConnect();
+setTimeout(function(){
+    client.createOrder(100,100,enums.order.type.buy);
+},2000);

@@ -4,10 +4,6 @@
  * Javascript file server.js 
  * *************************************************************** */
 
-// This RPC server will announce itself as `rpc_test`
-// in our Grape Bittorrent network
-// When it receives requests, it will answer with 'world'
-
 'use strict';
 
 const { PeerRPCServer }  = require('grenache-nodejs-http');
@@ -41,24 +37,36 @@ const announcers = {
         link.announce("order-matched",service.port,order);
     }
 };
-
 setInterval(announcers.test, 1000);
+
+const handlers = {
+    orderPlaced : function(data){
+        var order = new Order(data);
+        serverbook.orderPlaced(order);
+        order.on("matched", function(){
+            announcers.orderMatched(order);
+        });
+        serverbook.matchOrder(order);
+    },
+    orderCancelled : function(data){
+        serverbook.removeOrderCancelled(data.id);
+    }
+};
 
 service.on('request', (rid, key, payload, handler) => {
     console.log(payload); //  { msg: 'hello' }
-    handler.reply(null, { msg: 'world' });
-});
-
-service.on("order-placed",(rid, key, payload, handler) => {
-    var order = new Order(payload);
-    serverbook.orderPlaced(order);
-    handler.reply(null, { ok : true });
-    order.on("matched", function(){
-        announcers.orderMatched(order);
-    });
-    serverbook.matchOrder(order);
-});
-
-service.on("order-cancelled",(rid, key, payload, handler) => {
-    serverbook.removeOrderCancelled(payload.id);
+    if(payload.request === 'hello'){
+        handler.reply(null, { msg: 'world' });
+        return;
+    }
+    if(payload.request === 'order-placed'){
+        handlers.orderPlaced(payload.data);
+        handler.reply(null, { ok : true });
+        return;
+    }
+    if(payload.request === 'order-cancelled'){
+        handlers.orderCancelled(payload.data);
+        handler.reply(null, { ok : true });
+        return;
+    }
 });
