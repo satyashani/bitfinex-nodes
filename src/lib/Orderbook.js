@@ -59,6 +59,10 @@ class Orderbook {
         }
     }
     
+    toString(){
+        return this.orders.map(function(order){ return order.toString();}).join("\n");
+    }
+    
 };
 
 exports.Orderbook = Orderbook;

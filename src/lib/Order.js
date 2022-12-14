@@ -43,6 +43,10 @@ class Order extends EventEmitter {
         this.matchid = matchid;
         this.emit("matched");
     }
+    
+    toString (){
+        return [this.id,this.clientid,this.price,this.qty,this.status].join("|");
+    }
 };
 
 exports.Order = Order;

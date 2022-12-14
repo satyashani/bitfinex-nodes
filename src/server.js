@@ -43,6 +43,7 @@ const handlers = {
     orderPlaced : function(data){
         var order = new Order(data);
         serverbook.orderPlaced(order);
+        console.log("orderbook",serverbook.toString());
         order.on("matched", function(){
             announcers.orderMatched(order);
         });
