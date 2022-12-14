@@ -1,0 +1,17 @@
+{
+    "name": "bitfinex-exercise",
+    "version": "1.0.0",
+    "keywords": [
+        "util",
+        "functional",
+        "server",
+        "client",
+        "browser"
+    ],
+    "author": "shani",
+    "contributors": [],
+    "dependencies": {
+        "grenache-nodejs-http": "^0.7.12",
+        "grenache-nodejs-link": "^0.7.12"
+    }
+}
