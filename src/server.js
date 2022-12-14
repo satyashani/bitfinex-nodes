@@ -28,25 +28,14 @@ const port = 1024 + Math.floor(Math.random() * 1000);
 const service = peer.transport('server');
 service.listen(port);
 
-
-const announcers = {
-    test : function(){
-        link.announce('rpc_test', service.port, {});
-    },
-    orderMatched : function(order){
-        link.announce("order-matched",service.port,order);
-    }
-};
-setInterval(announcers.test, 1000);
+setInterval(function(){
+    link.announce('rpc_test', service.port, {});
+}, 1000);
 
 const handlers = {
     orderPlaced : function(data){
         var order = new Order(data);
         serverbook.orderPlaced(order);
-        console.log("orderbook",serverbook.toString());
-        order.on("matched", function(){
-            announcers.orderMatched(order);
-        });
         serverbook.matchOrder(order);
     },
     orderCancelled : function(data){
@@ -55,7 +44,7 @@ const handlers = {
 };
 
 service.on('request', (rid, key, payload, handler) => {
-    console.log(payload); //  { msg: 'hello' }
+    console.log(payload.request,payload.data ? payload.data.clientid : ''); //  { msg: 'hello' }
     if(payload.request === 'hello'){
         handler.reply(null, { msg: 'world' });
         return;
